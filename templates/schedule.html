@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить расписание врача</title>
+</head>
+<body>
+    <h2>Добавить расписание врача</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div>
+            <label for="doctor_id">ID врача:</label>
+            {{ form.doctor_id() }}
+        </div>
+
+        <div>
+            <label for="date">Дата:</label>
+            {{ form.date() }}
+        </div>
+
+        <div>
+            <label for="time">Время:</label>
+            {{ form.time() }}
+        </div>
+
+        <div>
+            <button type="submit">{{ form.submit.label }}</button>
+        </div>
+    </form>
+    <p>Вернуться на <a href="{{ url_for('index') }}">главную страницу</a></p>
+</body>
+</html>
