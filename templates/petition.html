@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ petition.title }}</h1>
+<p><strong>Category:</strong> {{ petition.category_id }}</p>
+<p><strong>Author:</strong> {{ petition.author_id }}</p>
+<p><strong>Description:</strong> {{ petition.description }}</p>
+<p><strong>Signatures:</strong> {{ petition.current_signatures }}/{{ petition.required_signatures }}</p>
+<p><strong>Status:</strong> {{ petition.status }}</p>
+
+{% if session.get('user_id') %}
+    <form method="POST" action="{{ url_for('petition', petition_id=petition.id) }}">
+        <button type="submit" name="sign" value="sign">Sign Petition</button>
+    </form>
+    <form method="POST" action="{{ url_for('petition', petition_id=petition.id) }}">
+        <label for="comment">Add a Comment:</label>
+        <textarea id="comment" name="comment" required></textarea>
+        <button type="submit">Add Comment</button>
+    </form>
+{% endif %}
+
+<h2>Comments:</h2>
+<ul>
+    {% for comment in comments %}
+    <li>{{ comment.content }} - User {{ comment.user_id }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

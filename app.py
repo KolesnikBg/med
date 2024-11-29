@@ -1,154 +1,97 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session
+from models import db, User, Petition, Signature, Comment, Category
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///petition.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
-
-# Инициализация базы данных
-def init_db():
-    conn = sqlite3.connect('clinic.db')
-    cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        first_name TEXT NOT NULL,
-                        last_name TEXT NOT NULL,
-                        email TEXT UNIQUE NOT NULL,
-                        password TEXT NOT NULL,
-                        role TEXT NOT NULL)''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS appointments (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        patient_id INTEGER NOT NULL,
-                        doctor_id INTEGER NOT NULL,
-                        date TEXT NOT NULL,
-                        time TEXT NOT NULL,
-                        FOREIGN KEY(patient_id) REFERENCES users(id),
-                        FOREIGN KEY(doctor_id) REFERENCES users(id))''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS schedules (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        doctor_id INTEGER NOT NULL,
-                        date TEXT NOT NULL,
-                        time TEXT NOT NULL,
-                        FOREIGN KEY(doctor_id) REFERENCES users(id))''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS doctor_work_hours (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        doctor_id INTEGER NOT NULL,
-                        work_day TEXT NOT NULL,
-                        start_time TEXT NOT NULL,
-                        end_time TEXT NOT NULL,
-                        FOREIGN KEY(doctor_id) REFERENCES users(id))''')
-    conn.commit()
-    conn.close()
+db.init_app(app)
 
 # Главная страница
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-# Регистрация пользователя
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email = request.form['email']
-        password = request.form['password']
-        role = request.form['role']
-
-        # Сохраняем пользователя в базе данных
-        conn = sqlite3.connect('clinic.db')
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-                       (first_name, last_name, email, password, role))
-        conn.commit()
-        conn.close()
-
-        flash('Registration successful!', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
+    petitions = Petition.query.filter_by(status='active').all()
+    return render_template('index.html', petitions=petitions)
 
 # Страница входа
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
-
-        # Проверка данных пользователя
-        conn = sqlite3.connect('clinic.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
-        user = cursor.fetchone()
-        conn.close()
-
+        user = User.query.filter_by(username=username, password=password).first()
         if user:
-            flash('Login successful!', 'success')
+            session['user_id'] = user.id
+            session['role'] = user.role
             return redirect(url_for('index'))
-        else:
-            flash('Invalid email or password', 'danger')
-
+        return "Invalid credentials"
     return render_template('login.html')
 
-# Страница записи на прием (для администратора)
-@app.route('/admin/appointment', methods=['GET', 'POST'])
-def admin_appointment():
+# Страница регистрации
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
-        patient_email = request.form['patient_email']
-        doctor_email = request.form['doctor_email']
-        date = request.form['date']
-        time = request.form['time']
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        new_user = User(username=username, password=password, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    return render_template('register.html')
 
-        # Найдем пациентов и врачей по email
-        conn = sqlite3.connect('clinic.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE email = ?", (patient_email,))
-        patient = cursor.fetchone()
-
-        cursor.execute("SELECT id FROM users WHERE email = ? AND role = 'doctor'", (doctor_email,))
-        doctor = cursor.fetchone()
-
-        if patient and doctor:
-            cursor.execute("INSERT INTO appointments (patient_id, doctor_id, date, time) VALUES (?, ?, ?, ?)",
-                           (patient[0], doctor[0], date, time))
-            conn.commit()
-            flash('Appointment created successfully!', 'success')
-        else:
-            flash('Invalid patient or doctor email.', 'danger')
-
-        conn.close()
-        return redirect(url_for('index'))
-
-    return render_template('admin_appointment.html')
-
-# Страница для администратора для выставления рабочих часов врача
-@app.route('/admin/set_work_hours', methods=['GET', 'POST'])
-def set_work_hours():
+# Страница создания петиции
+@app.route('/create_petition', methods=['GET', 'POST'])
+def create_petition():
     if request.method == 'POST':
-        doctor_email = request.form['doctor_email']
-        work_day = request.form['work_day']
-        start_time = request.form['start_time']
-        end_time = request.form['end_time']
+        title = request.form['title']
+        description = request.form['description']
+        category_id = request.form['category_id']
+        required_signatures = int(request.form['required_signatures'])
+        author_id = session.get('user_id')
+        if author_id:
+            new_petition = Petition(
+                author_id=author_id,
+                title=title,
+                description=description,
+                category_id=category_id,
+                required_signatures=required_signatures
+            )
+            db.session.add(new_petition)
+            db.session.commit()
+            return redirect(url_for('index'))
+        return "Unauthorized"
+    categories = Category.query.all()
+    return render_template('create_petition.html', categories=categories)
 
-        # Найдем врача по email
-        conn = sqlite3.connect('clinic.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE email = ? AND role = 'doctor'", (doctor_email,))
-        doctor = cursor.fetchone()
+# Страница петиции
+@app.route('/petition/<int:petition_id>', methods=['GET', 'POST'])
+def petition(petition_id):
+    petition = Petition.query.get(petition_id)
+    comments = Comment.query.filter_by(petition_id=petition_id).all()
+    if request.method == 'POST':
+        user_id = session.get('user_id')
+        if user_id and request.form.get('comment'):
+            content = request.form['comment']
+            new_comment = Comment(petition_id=petition_id, user_id=user_id, content=content)
+            db.session.add(new_comment)
+            db.session.commit()
+        elif user_id:
+            new_signature = Signature(petition_id=petition_id, user_id=user_id)
+            db.session.add(new_signature)
+            petition.current_signatures += 1
+            if petition.current_signatures >= petition.required_signatures:
+                petition.status = 'archived'
+            db.session.commit()
+        return redirect(url_for('petition', petition_id=petition_id))
+    return render_template('petition.html', petition=petition, comments=comments)
 
-        if doctor:
-            cursor.execute("INSERT INTO doctor_work_hours (doctor_id, work_day, start_time, end_time) VALUES (?, ?, ?, ?)",
-                           (doctor[0], work_day, start_time, end_time))
-            conn.commit()
-            flash('Work hours set successfully!', 'success')
-        else:
-            flash('Invalid doctor email.', 'danger')
+# Архив
+@app.route('/archive')
+def archive():
+    petitions = Petition.query.filter_by(status='archived').all()
+    return render_template('archive.html', petitions=petitions)
 
-        conn.close()
-        return redirect(url_for('index'))
-
-    return render_template('admin_set_work_hours.html')
-
-# Запуск приложения
 if __name__ == '__main__':
-    init_db()  # Инициализируем базу данных, если еще не существует
+    with app.app_context():
+        db.create_all()  # Создание таблиц, если их еще нет
     app.run(debug=True)

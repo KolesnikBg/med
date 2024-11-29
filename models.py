@@ -1,54 +1,34 @@
-import sqlite3
+from flask_sqlalchemy import SQLAlchemy
 
-# Функция для получения подключения к базе данных
-def get_db_connection():
-    conn = sqlite3.connect("medical.db")
-    conn.row_factory = sqlite3.Row  # Позволяет работать с данными как с аттрибутами строк
-    return conn
+db = SQLAlchemy()
 
-# Модели базы данных для пользователей, врачей и записей на прием
-def init_db():
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            role TEXT NOT NULL
-        )
-        """)
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(50), nullable=False)  # Пароль в виде текста
+    role = db.Column(db.String(10), nullable=False)  # "user" или "author"
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS doctors (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL
-        )
-        """)
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)  # Название категории
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS appointments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            patient_id INTEGER NOT NULL,
-            doctor_id INTEGER NOT NULL,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL,
-            FOREIGN KEY (patient_id) REFERENCES users(id),
-            FOREIGN KEY (doctor_id) REFERENCES doctors(id)
-        )
-        """)
+class Petition(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    required_signatures = db.Column(db.Integer, nullable=False)
+    current_signatures = db.Column(db.Integer, default=0)
+    status = db.Column(db.String(10), default='active')  # "active" или "archived"
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS schedule (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            doctor_id INTEGER NOT NULL,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL,
-            FOREIGN KEY (doctor_id) REFERENCES doctors(id)
-        )
-        """)
+class Signature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    petition_id = db.Column(db.Integer, db.ForeignKey('petition.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-        conn.commit()
-        print("Database initialized and tables created.")
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    petition_id = db.Column(db.Integer, db.ForeignKey('petition.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)

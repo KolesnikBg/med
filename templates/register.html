@@ -1,39 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <h2>Регистрация</h2>
-    <form method="POST">
-        <div>
-            <label for="first_name">Имя:</label>
-            <input type="text" name="first_name" required>
-        </div>
-        <div>
-            <label for="last_name">Фамилия:</label>
-            <input type="text" name="last_name" required>
-        </div>
-        <div>
-            <label for="email">Электронная почта:</label>
-            <input type="email" name="email" required>
-        </div>
-        <div>
-            <label for="password">Пароль:</label>
-            <input type="password" name="password" required>
-        </div>
-        <div>
-            <label for="role">Роль:</label>
-            <select name="role">
-                <option value="patient">Пациент</option>
-                <option value="doctor">Врач</option>
-            </select>
-        </div>
-        <div>
-            <button type="submit">Зарегистрироваться</button>
-        </div>
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h1>Register</h1>
+<form method="POST" action="{{ url_for('register') }}">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <label for="role">Register as:</label>
+    <select id="role" name="role">
+        <option value="user">User</option>
+        <option value="author">Author</option>
+    </select>
+    <br>
+    <button type="submit">Register</button>
+</form>
+{% endblock %}

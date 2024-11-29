@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход</title>
-</head>
-<body>
-    <h2>Вход в систему</h2>
-    <form method="POST">
-        <div>
-            <label for="email">Электронная почта:</label>
-            <input type="email" name="email" required>
-        </div>
-        <div>
-            <label for="password">Пароль:</label>
-            <input type="password" name="password" required>
-        </div>
-        <div>
-            <button type="submit">Войти</button>
-        </div>
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h1>Login</h1>
+<form method="POST" action="{{ url_for('login') }}">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Login</button>
+</form>
+{% endblock %}
