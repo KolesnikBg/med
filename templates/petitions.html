@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Petitions</title>
 </head>
 <body>
-    <h1>Welcome to the Petitions Platform</h1>
+    <h1>Create Petition</h1>
+    <form method="POST">
+        <label for="name">Petition Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
 
-    {% if is_logged_in %}
-        <p>Hello, {{ session['username'] }}!</p>
-        <a href="/logout">Logout</a>
-    {% else %}
-        <a href="/login">Login</a> | <a href="/register">Register</a>
-    {% endif %}
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
 
-    <h2>Petitions</h2>
-
-    <!-- Category filter -->
-    <form method="GET" action="/">
-        <label for="category">Filter by Category:</label>
-        <select name="category" id="category">
-            <option value="">All Categories</option>
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
             {% for category in categories %}
                 <option value="{{ category[0] }}">{{ category[1] }}</option>
             {% endfor %}
-        </select>
-        <button type="submit">Filter</button>
-    </form>
+        </select><br><br>
 
-    <h3>Active Petitions</h3>
+        <label for="required_signatures">Required Signatures:</label>
+        <input type="number" id="required_signatures" name="required_signatures" min="1" required><br><br>
+
+        <button type="submit">Create Petition</button>
+    </form>
+    <h2>Existing Petitions</h2>
     <ul>
         {% for petition in petitions %}
             <li>

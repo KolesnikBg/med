@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ petition[1] }}</title>
+</head>
+<body>
+    <h1>{{ petition[1] }}</h1>
+    <p><strong>Description:</strong> {{ petition[2] }}</p>
+    <p><strong>Category:</strong> {{ petition[3] }}</p>
+    <p><strong>Required Signatures:</strong> {{ petition[4] }}</p>
+    <p><strong>Current Signatures:</strong> {{ petition[5] }}</p>
+    <p><strong>Status:</strong> {{ petition[6] }}</p>
+    <p><strong>Author:</strong> {{ petition[7] }}</p>
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <p><strong>{{ comment[2] }}</strong> ({{ comment[1] }}):</p>
+                <p>{{ comment[0] }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Add a Comment</h3>
+    <form method="POST">
+        <textarea name="comment_text" rows="4" cols="50" required></textarea><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Subscribe Button -->
+    {% if session['user_id'] and not is_subscribed %}
+        <form method="POST" action="/subscribe/{{ petition[0] }}">
+            <button type="submit">Sign Petition</button>
+        </form>
+    {% elif is_subscribed %}
+        <p>You have already signed this petition.</p>
+    {% endif %}
+</body>
+</html>
