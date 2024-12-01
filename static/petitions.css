@@ -1,0 +1,134 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Шапка */
+header {
+    background-color: #2c3e50;
+    color: #fff;
+    padding-bottom: 1rem;
+    display: flex;
+
+}
+
+.logo {
+    font-size: 60px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+}
+
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-menu li {
+    margin: 0 1rem;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.user-info {
+    margin-left: auto;
+    float: right;
+    color: #ccc;
+}
+
+/* Основной контент */
+.main {
+    padding: 2rem 0;
+}
+
+/* Контейнер петиции */
+.petition-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.petition-form label {
+    font-weight: bold;
+    margin-top: 1rem;
+    display: block;
+}
+
+.petition-form input,
+.petition-form textarea,
+.petition-form select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.petition-form input:focus,
+.petition-form textarea:focus,
+.petition-form select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.petition-form .btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.petition-form .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Уведомление об успешном создании */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 1rem;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Стили для футера */
+.footer {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+    margin-top: 2rem;
+    position: absolute;
+    width: 100%;
+
+}

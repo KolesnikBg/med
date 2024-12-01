@@ -1,47 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Главная</title>
+    <link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Welcome to the Petitions Platform</h1>
+<header>
+    <div class="container">
 
-    {% if is_logged_in %}
-        <p>Hello, {{ session['username'] }}!</p>
-        <a href="/logout">Logout</a>
-    {% else %}
-        <a href="/login">Login</a> | <a href="/register">Register</a>
-    {% endif %}
+        <nav>
+            <a href="/" class="logo">vote.ru</a>
+            <ul class="nav-menu">
+                {% if is_logged_in %}
+                {% if session['user_type'] == 'author' %}
+                <li class="user-links"><a href="/petitions">Создать петицию</a></li>
+                <li class="user-links"><a href="/categories">Создать категорию</a></li>
+                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>
+                {% endif %}
+                {% else %}
+                <li class="user-info"><a href="/login">Войти</a> | <a href="/register">Зарегистрироваться</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="main">
+    <div class="container">
 
-    <h2>Petitions</h2>
-
-    <!-- Category filter -->
-    <form method="GET" action="/">
-        <label for="category">Filter by Category:</label>
-        <select name="category" id="category">
-            <option value="">All Categories</option>
-            {% for category in categories %}
+        <!-- Category filter -->
+        <form method="GET" action="/" class="filter-form">
+            <label for="category">Поиск по категориям:</label>
+            <select name="category" id="category">
+                <option value="">Все категории</option>
+                {% for category in categories %}
                 <option value="{{ category[0] }}">{{ category[1] }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filter</button>
-    </form>
+                {% endfor %}
+            </select>
+            <button type="submit">Поиск</button>
+        </form>
 
-    <h3>Active Petitions</h3>
-    <ul>
-        {% for petition in petitions %}
-            <li>
+        <ul class="petition-list">
+            {% for petition in petitions %}
+            <li class="petition-item">
                 <a href="/petition/{{ petition[0] }}">
                     <strong>{{ petition[1] }}</strong>
                 </a>
                 <p>{{ petition[2] }}</p>
-                <p>Category: {{ petition[3] }}</p>
-                <p>Required: {{ petition[4] }} | Signed: {{ petition[5] }}</p>
-                <p>Status: {{ petition[6] }}</p>
+                <p><strong>Категория:</strong> {{ petition[3] }}</p>
+                <p><strong>Цель:</strong> {{ petition[4] }} | <strong>Подписало:</strong> {{ petition[5] }}</p>
             </li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 vote.ru. Все права защищены.</p>
+    </div>
+</footer>
 </body>
 </html>

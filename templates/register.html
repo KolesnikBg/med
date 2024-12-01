@@ -4,26 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link href="/static/style_login.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Register</h1>
-    <form method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
+<header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">vote.ru</a>
+        </nav>
+    </div>
+</header>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+<div class="login-container">
+    <h1>Регистрация</h1>
+    <form method="POST" class="login-form">
+        <label for="username">Никнейм:</label>
+        <input type="text" id="username" name="username" required placeholder="Придумайте никнейм"><br><br>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required placeholder="Придумайте пароль"><br><br>
 
-        <label for="user_type">User Type:</label>
+        <label for="email">Почта:</label>
+        <input type="email" id="email" name="email" required placeholder="Введите вашу эл. почту"><br><br>
+
+        <label for="user_type">Тип пользователя:</label>
         <select id="user_type" name="user_type" required>
-            <option value="author">Author</option>
-            <option value="user">User</option>
+            <option value="user">Читатель</option>
+            <option value="author">Автор</option>
         </select><br><br>
 
-        <button type="submit">Register</button>
+        <button type="submit" class="btn">Register</button>
     </form>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 vote.ru. Все права защищены.</p>
+    </div>
+</footer>
 </body>
 </html>

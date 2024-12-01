@@ -1,52 +1,127 @@
+/* Общие стили */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+
 }
 
-nav {
-    background-color: #333;
-    color: white;
-    padding: 10px;
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-nav a {
-    color: white;
-    margin-right: 15px;
+/* Шапка */
+header {
+    background-color: #2c3e50;
+    color: #fff;
+    padding-bottom: 1rem;
+    display: flex;
+
+}
+
+.logo {
+    font-size: 60px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+}
+
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-menu li {
+    margin: 0 1rem;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.user-info {
+    margin-left: auto;
+    float: right;
+    color: #ccc;
+}
+
+/* Основной контент */
+.main {
+    padding: 2rem 0;
+}
+
+.filter-form {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filter-form label {
+    font-weight: bold;
+}
+
+.filter-form select, .filter-form button {
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+.petition-list {
+    list-style: none;
+    padding: 0;
+}
+
+.petition-item {
+    background: #fff;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.petition-item a {
+    font-size: 1.2rem;
+    color: #2c3e50;
     text-decoration: none;
 }
 
-nav a:hover {
-    text-decoration: underline;
+.petition-item p {
+    margin: 0.5rem 0;
 }
 
-main {
-    padding: 20px;
+.petition-item p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Указывает количество строк */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Добавляет многоточие */
 }
 
-form {
-    margin-top: 20px;
-}
 
-form label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-form input, form textarea, form select {
+/* Стили для футера */
+.footer {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+    margin-top: 2rem;
+    position: absolute;
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+
 }
 
-form button {
-    padding: 10px 15px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
 
-form button:hover {
-    background-color: #0056b3;
-}
+
+
+

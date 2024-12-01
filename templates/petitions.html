@@ -3,42 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petitions</title>
+    <title>Создание петиции</title>
+    <link href="/static/petitions.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Create Petition</h1>
-    <form method="POST">
-        <label for="name">Petition Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+<header>
+    <div class="container">
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea><br><br>
+        <nav>
+            <a href="/" class="logo">vote.ru</a>
+            <ul class="nav-menu">
+                {% if is_logged_in %}
+                {% if session['user_type'] == 'author' %}
+                <li class="user-links"><a href="/petitions">Создать петицию</a></li>
+                <li class="user-links"><a href="/categories">Создать категорию</a></li>
+                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>
+                {% endif %}
+                {% else %}
+                <li class="user-info"><a href="/login">Войти</a> | <a href="/register">Зарегистрироваться</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</header>
 
-        <label for="category">Category:</label>
-        <select id="category" name="category" required>
-            {% for category in categories %}
-                <option value="{{ category[0] }}">{{ category[1] }}</option>
-            {% endfor %}
-        </select><br><br>
+    <div class="petition-container">
+        <h1>Создание петиции</h1>
 
-        <label for="required_signatures">Required Signatures:</label>
-        <input type="number" id="required_signatures" name="required_signatures" min="1" required><br><br>
+        <!-- Уведомление об успешном создании петиции -->
+        {% if success_message %}
+            <div class="success-message">
+                {{ success_message }}
+            </div>
+        {% endif %}
 
-        <button type="submit">Create Petition</button>
-    </form>
-    <h2>Existing Petitions</h2>
-    <ul>
-        {% for petition in petitions %}
-            <li>
-                <a href="/petition/{{ petition[0] }}">
-                    <strong>{{ petition[1] }}</strong>
-                </a>
-                <p>{{ petition[2] }}</p>
-                <p>Category: {{ petition[3] }}</p>
-                <p>Required: {{ petition[4] }} | Signed: {{ petition[5] }}</p>
-                <p>Status: {{ petition[6] }}</p>
-            </li>
-        {% endfor %}
-    </ul>
+        <form method="POST" class="petition-form">
+            <label for="name">Название:</label>
+            <input type="text" id="name" name="name" required placeholder="Введите название петиции">
+
+            <label for="description">Описание:</label>
+            <textarea id="description" name="description" required placeholder="Опишите вашу петицию"></textarea>
+
+            <label for="category">Категория:</label>
+            <select id="category" name="category" required>
+                {% for category in categories %}
+                    <option value="{{ category[0] }}">{{ category[1] }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="required_signatures">Цель подписей:</label>
+            <input type="number" id="required_signatures" name="required_signatures" min="1" required placeholder="Введите количество подписей">
+
+            <button type="submit" class="btn">Создать</button>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 vote.ru. Все права защищены.</p>
+        </div>
+    </footer>
 </body>
 </html>

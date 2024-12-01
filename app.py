@@ -16,7 +16,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            email TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
             user_type TEXT NOT NULL CHECK(user_type IN ('author', 'user'))
         )
     ''')
@@ -41,6 +41,7 @@ def init_db():
             required_signatures INTEGER NOT NULL,
             current_signatures INTEGER DEFAULT 0,
             status TEXT NOT NULL CHECK(status IN ('active', 'archived', 'deleted')),
+            petition_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (author_id) REFERENCES users (id),
             FOREIGN KEY (category_id) REFERENCES categories (id)
         )
@@ -131,7 +132,7 @@ def register():
             conn.close()
             return redirect('/login')
         except sqlite3.IntegrityError:
-            return "Error: Username already exists. Please try another one.", 400
+            return render_template('register.html')
 
     return render_template('register.html')
 
@@ -154,7 +155,7 @@ def login():
             session['user_type'] = user[4]
             return redirect('/')
         else:
-            return "Invalid username or password. Please try again."
+            return render_template('login.html')
 
     return render_template('login.html')
 
@@ -188,44 +189,72 @@ def categories():
     cursor.execute('SELECT * FROM categories')
     categories_list = cursor.fetchall()
     conn.close()
-    return render_template('categories.html', categories=categories_list)
+    # Проверка, авторизован ли пользователь
+    is_logged_in = 'username' in session
+    return render_template('categories.html', categories=categories_list, is_logged_in=is_logged_in)
 
 
 @app.route('/petitions', methods=['GET', 'POST'])
 def petitions():
+    # Проверка прав доступа: только авторы могут создавать петиции
     if 'username' not in session or session['user_type'] != 'author':
         return "Access denied. Only authors can create petitions.", 403
 
+    success_message = None
+
     if request.method == 'POST':
+        # Получение данных из формы
         name = request.form['name']
         description = request.form['description']
         category_id = request.form['category']
-        required_signatures = request.form['required_signatures']
+        required_signatures = int(request.form['required_signatures'])
 
+        # Подключение к базе данных
         conn = sqlite3.connect('users.db')
         cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO petitions (author_id, name, description, category_id, required_signatures, status) VALUES (?, ?, ?, ?, ?, ?)',
-            (session['user_id'], name, description, category_id, required_signatures, 'active'))
-        conn.commit()
-        conn.close()
-        return redirect('/petitions')
 
+        # Вставка новой петиции в таблицу
+        cursor.execute(
+            '''
+            INSERT INTO petitions (author_id, name, description, category_id, required_signatures, status, current_signatures) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''',
+            (session['user_id'], name, description, category_id, required_signatures, 'active', 0))
+        conn.commit()
+
+        # Сообщение об успехе
+        success_message = f"Петиция '{name}' успешно создана!"
+        conn.close()
+
+
+
+    # Получение списка категорий для отображения в форме
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM categories')
     categories_list = cursor.fetchall()
 
-    # Извлечение петиций с данными об авторе
+    # Получение всех петиций с данными об авторах и категориях
     cursor.execute('''
-        SELECT p.id, p.name, p.description, c.name, p.required_signatures, p.current_signatures, p.status, u.username 
+        SELECT p.id, p.name, p.description, c.name AS category_name, 
+               p.required_signatures, p.current_signatures, p.status, u.username AS author_name
         FROM petitions p
         JOIN categories c ON p.category_id = c.id
         JOIN users u ON p.author_id = u.id
+        ORDER BY p.id DESC
     ''')
     petitions_list = cursor.fetchall()
     conn.close()
-    return render_template('petitions.html', categories=categories_list, petitions=petitions_list)
+    # Проверка, авторизован ли пользователь
+    is_logged_in = 'username' in session
+
+    return render_template(
+        'petitions.html',
+        categories=categories_list,
+        petitions=petitions_list,
+        success_message=success_message,
+        is_logged_in=is_logged_in
+    )
 
 # Переименуйте функцию или маршрут с уникальным именем
 @app.route('/petition/<int:petition_id>', methods=['GET', 'POST'])
@@ -357,7 +386,7 @@ def petition_details(petition_id):
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/login')
+    return redirect('/')
 
 
 if __name__ == '__main__':

@@ -3,18 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Войти</title>
+    <link href="/static/style_login.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Login</h1>
-    <form method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
+<header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">vote.ru</a>
+        </nav>
+    </div>
+</header>
+<div class="login-container">
+    <h1>Войти</h1>
+    <form method="POST" class="login-form">
+        <label for="username">Никнейм:</label>
+        <input type="text" id="username" name="username" required placeholder="Введите ваш никнейм">
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required placeholder="Введите ваш пароль">
 
-        <button type="submit">Login</button>
+        <button type="submit" class="btn">Войти</button>
     </form>
+</div>
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 vote.ru. Все права защищены.</p>
+    </div>
+</footer>
 </body>
 </html>
