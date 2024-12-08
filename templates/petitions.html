@@ -9,15 +9,15 @@
 <body>
 <header>
     <div class="container">
-
         <nav>
             <a href="/" class="logo">vote.ru</a>
             <ul class="nav-menu">
                 {% if is_logged_in %}
+                <li class="user-info" style="right">{{ session['username'] }} | <a href="/logout">Выход</a></li>
                 {% if session['user_type'] == 'author' %}
                 <li class="user-links"><a href="/petitions">Создать петицию</a></li>
                 <li class="user-links"><a href="/categories">Создать категорию</a></li>
-                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>
+<!--                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>-->
                 {% endif %}
                 {% else %}
                 <li class="user-info"><a href="/login">Войти</a> | <a href="/register">Зарегистрироваться</a></li>

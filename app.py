@@ -71,7 +71,6 @@ def init_db():
            )
        ''')
 
-
     conn.commit()
     conn.close()
 
@@ -302,8 +301,10 @@ def petition_details_page(petition_id):  # Переименовываем фун
     ''', (petition_id,))
     comments = cursor.fetchall()
     conn.close()
+    # Проверка, авторизован ли пользователь
+    is_logged_in = 'username' in session
 
-    return render_template('petition_details.html', petition=petition, comments=comments, is_subscribed=is_subscribed)
+    return render_template('petition_details.html', petition=petition, comments=comments, is_subscribed=is_subscribed, is_logged_in=is_logged_in)
 
 @app.route('/subscribe/<int:petition_id>', methods=['POST'])
 def subscribe(petition_id):

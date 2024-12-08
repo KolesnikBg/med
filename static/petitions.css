@@ -8,6 +8,12 @@ body {
     color: #333;
 }
 
+textarea {
+	resize: none;
+	width: 400px;
+	height: 150px;
+}
+
 .container {
     width: 90%;
     max-width: 1200px;
@@ -62,7 +68,7 @@ header {
 
 /* Контейнер петиции */
 .petition-container {
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
     background-color: #fff;

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories</title>
-    <link href="/static/style.css" rel="stylesheet">
+    <title>Категории</title>
+    <link href="/static/petitions.css" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -13,10 +13,11 @@
             <a href="/" class="logo">vote.ru</a>
             <ul class="nav-menu">
                 {% if is_logged_in %}
+                <li class="user-info" style="right">{{ session['username'] }} | <a href="/logout">Выход</a></li>
                 {% if session['user_type'] == 'author' %}
                 <li class="user-links"><a href="/petitions">Создать петицию</a></li>
                 <li class="user-links"><a href="/categories">Создать категорию</a></li>
-                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>
+<!--                <li class="user-info">{{ session['username'] }} | <a href="/logout">Выход</a></li>-->
                 {% endif %}
                 {% else %}
                 <li class="user-info"><a href="/login">Войти</a> | <a href="/register">Зарегистрироваться</a></li>
@@ -25,22 +26,25 @@
         </nav>
     </div>
 </header>
-    <h1>Categories</h1>
-    <form method="POST">
-        <label for="name">Category Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+    <div class="petition-container">
+    <h1>Категории</h1>
+    <form method="POST" class="petition-form">
+        <label for="name">Название:</label>
+        <input type="text" id="name" name="name" required placeholder="Введите название категории">
 
-        <label for="description">Description:</label>
+        <label for="description">Описание:</label>
         <textarea id="description" name="description" required></textarea><br><br>
 
-        <button type="submit">Create Category</button>
+        <button type="submit" class="btn">Создать категорию</button>
     </form>
-    <h2>Existing Categories</h2>
+
+    <h2>Существующие категории</h2>
     <ul>
         {% for category in categories %}
             <li><strong>{{ category[1] }}</strong>: {{ category[2] }}</li>
         {% endfor %}
     </ul>
+        </div>
 <footer class="footer">
     <div class="container">
         <p>&copy; 2024 vote.ru. Все права защищены.</p>
